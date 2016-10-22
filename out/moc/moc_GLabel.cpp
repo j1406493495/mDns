@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'GLabel.h'
 **
-** Created: Thu Oct 20 19:58:49 2016
+** Created: Sat Oct 22 11:48:19 2016
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!

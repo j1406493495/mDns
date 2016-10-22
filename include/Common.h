@@ -51,6 +51,7 @@ typedef struct device_info {
 	QHostAddress IPv4Addr;
 	QHostAddress IPv6Addr;
 	QString deviceName;
+    QString version;
 	bool isMaster;
 }DEVICE_INFO;
 

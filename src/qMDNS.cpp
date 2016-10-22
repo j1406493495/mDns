@@ -529,58 +529,59 @@ void qMDNS::lookup () {
     memset(recvBuf, 0, sizeof(recvBuf));
     socklen_t server_len = sizeof(struct sockaddr);
     //recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, (struct sockaddr*)&m_serverAddr, &server_len);
-    if (recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, NULL, 0) < 0)
+    int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, NULL, 0);
+    if (number < 0)
     {
         qWarning() << "recvfrom error";
     }
     qWarning() << "recvBuf = " << recvBuf;
-    //parseRecv(QByteArray(recvBuf));
+    qWarning() << "recvBuf number = " << number;
+    parseRecv(recvBuf, number);
 }
 
 
-void qMDNS::parseRecv(QByteArray data)
+void qMDNS::parseRecv(uint8_t data[], int number)
 {
-    qWarning() << "data.length = " << data.length();
-//    QByteArray data;
-//    QUdpSocket* socket = qobject_cast<QUdpSocket*> (sender());
     QHostAddress hostAddress("172.16.2.133");
-//    quint16 port;
-//
-//    /* Read data from the socket */
-//    if (socket) {
-//        while (socket->hasPendingDatagrams()) {
-//            data.resize (socket->pendingDatagramSize());
-//            socket->readDatagram (data.data(), data.size(), &hostAddress, &port);
-//        }
-//    }
-//    qWarning() << "hostAddress = " << hostAddress << ", port = " << port;
-//    logFile(QString("hostAddress = ").append(hostAddress.toString()).append(QString(", port = ")).append(port));
+
+    qWarning() << "data = " << data;
 
     /* Packet is a valid mDNS datagram */
-    if (data.length() > MIN_LENGTH) {
+//    if (data.length() > MIN_LENGTH) {
+    if (number > MIN_LENGTH) {
         /* Get the lengths of the host name and domain */
         int n = 12;
-        int hostLength = data.at (n);
-        int domainLength = data.at (n + hostLength + 1);
+        int hostLength = data[n];
+        int domainLength = data[n + hostLength + 1];
 
         /* Read the host name until we stumble with the domain length character */
-        QString name;
+        char name[hostLength];
+        memset(name, 0, hostLength);
         int h = n + 1;
-        while (h <= data.length() && data.at (h) != (char) domainLength) {
-            name.append (data.at (h));
-            ++h;
-        }
+        for (int i = 0; i < hostLength; i++) {
+            name[i] = tolower(data[h+i]);
+        } 
+        qWarning() << "name = " << name;
+//        while (h <= data.length() && data.at (h) != (char) domainLength) {
+//            name.append (data.at (h));
+//            ++h;
+//        }
 
         /* Read domain length until we stumble with the FQDN/TLD separator */
-        QString domain;
+        char domain[domainLength];
+        memset(domain, 0, domainLength);
         int d = n + hostLength + 2;
-        while (d <= data.length() && data.at (d) != kFQDN_Separator) {
-            domain.append (data.at (d));
-            ++d;
+        for (int i = 0; i < domainLength; i++) {
+            domain[i] = tolower(data[d+i]);
         }
+        qWarning() << "domain = " << domain;
+//        while (d <= data.length() && data.at (d) != kFQDN_Separator) {
+//            domain.append (data.at (d));
+//            ++d;
+//        }
 
         /* Construct the full host name (name + domain) */
-        QString host = getAddress (name + "." + domain);
+        QString host = getAddress ((QString)name + "." + (QString)domain);
         qWarning() << "host ====================== " << host;
         logFile(QString("host = ").append(host));
 
@@ -590,8 +591,8 @@ void qMDNS::parseRecv(QByteArray data)
             /*parse mdns gwn info when restart network*/
             saveDeviceInfo(data, hostAddress, 148);
         }
+    //}
     }
-
 }
 
 /**
@@ -643,57 +644,99 @@ void qMDNS::onReadyRead() {
 
         if (host.contains("GWN", Qt::CaseInsensitive)) {
             /*parse mdns gwn info when lookup*/
-            saveDeviceInfo(data, hostAddress, 91);
+            //saveDeviceInfo(data, hostAddress, 91);
             /*parse mdns gwn info when restart network*/
-            saveDeviceInfo(data, hostAddress, 148);
+            //saveDeviceInfo(data, hostAddress, 148);
         }
     }
 }
 
-void qMDNS::saveDeviceInfo(QByteArray data, QHostAddress hostAddress, int t)
+//void qMDNS::saveDeviceInfo(QByteArray data, QHostAddress hostAddress, int t)
+void qMDNS::saveDeviceInfo(uint8_t data[], QHostAddress hostAddress, int t)
 {
-    QString role;
-    QString product;
-    QString mac;
-    int roleLength = data.at(t);
-    int productLength = data.at(t + roleLength + 1);
-    int macLength = data.at(t + roleLength + productLength + 2);
-    char endChar = data.at(t + roleLength + productLength + macLength + 3);
+//    QString role;
+//    QString product;
+//    QString mac;
+//    QString version;
+    int roleLength = data[t];
+    int productLength = data[t + roleLength + 1];
+    int macLength = data[t + roleLength + productLength + 2];
+    int versionLength = data[t + roleLength + productLength + macLength + 3];
+    char endChar = (char)data[t + roleLength + productLength + macLength + versionLength + 4];
+    
+    char role[roleLength];
+    char product[productLength];
+    char mac[macLength];
+    char version[versionLength];
+    memset(role, 0, roleLength);
+    memset(product, 0, productLength);
+    memset(mac, 0, macLength);
+    memset(version, 0, versionLength);
 
     t += 6;
-    while (t <= data.length() && data.at(t) != (char)productLength) {
-        role.append(data.at(t));
-        ++t;
+    for (int i = 0; i < roleLength-5; i++) {
+        role[i] = tolower(data[t]);
+        t++;
     }
+//    while (t <= data.length() && data.at(t) != (char)productLength) {
+//        role.append(data.at(t));
+//        ++t;
+//    }
     qWarning() << "role =======================" << role;
-    logFile(QString("role = ").append(role));
+    logFile(QString("role = ").append((QString)role));
 
     t += 9;
-    while (t <= data.length() && data.at(t) != (char)macLength) {
-        product.append(data.at(t));
-        ++t;
+    for (int i = 0; i < productLength-8; i++) {
+        product[i] = tolower(data[t]);
+        t++;
     }
+    //    while (t <= data.length() && data.at(t) != (char)macLength) {
+    //        product.append(data.at(t));
+    //        ++t;
+    //    }
     qWarning() << "product ====================" << product;
-    logFile(QString("product = ").append(product));
+    logFile(QString("product = ").append((QString)product));
 
     t += 5;
-    while (t <= data.length() && data.at(t) != endChar) {
-        mac.append(data.at(t));
-        ++t;
+    for (int i = 0; i < macLength-4; i++) {
+        mac[i] = tolower(data[t]);
+        t++;
     }
+    //    while (t <= data.length() && data.at(t) != versionLength) {
+    //        mac.append(data.at(t));
+    //        ++t;
+    //    }
     qWarning() << "mac ========================" << mac;
-    logFile(QString("mac = ").append(mac));
+    logFile(QString("mac = ").append((QString)mac));
 
-    if (t > data.length()) {
-        return;
+    t += 9;
+    for (int i = 0; i < versionLength-8; i++) {
+        version[i] = tolower(data[t]);
+        t++;
     }
+//    while (t <= data.length() && data.at(t) != endChar) {
+//        version.append(data.at(t));
+//        ++t;
+//    }
+    qWarning() << "version ========================" << version;
+    logFile(QString("version = ").append((QString)version));
 
-    if (product.contains("GWN", Qt::CaseInsensitive) && 7==product.size() && 17==mac.size()) {
+//    if (t > data.length()) {
+//        return;
+//    }
+
+    QString qProduct = QString(product);
+    QString qRole = QString(role);
+    QString qMac = QString(mac);
+    QString qVersion = QString(version);
+
+    if (qProduct.contains("GWN", Qt::CaseInsensitive) && 7==qProduct.size() && 17==qMac.size()) {
         DEVICE_INFO deviceInfo;
-        deviceInfo.macAddr = mac;
+        deviceInfo.macAddr = qMac;
         deviceInfo.IPv4Addr = hostAddress;
-        deviceInfo.deviceName = product;
-        if (QString("master") == role) {
+        deviceInfo.deviceName = qProduct;
+        deviceInfo.version = qVersion;
+        if (QString("master") == qRole) {
             deviceInfo.isMaster = true;
         } else {
             deviceInfo.isMaster = false;

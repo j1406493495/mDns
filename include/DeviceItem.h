@@ -16,9 +16,10 @@ class DeviceItem : public QWidget
 	private:
 		GLabel *mIsMasterLabel;
 		GLabel *mDeviceNameLabel;
+        GLabel *mVersionLabel;
 		GLabel *mMacLabel;
 		GLabel *mIPAddrLabel;
-		GLabel *mLinkLabel;
+        GLabel *mLinkLabel;
 
 		void initLayout();
 		void initSignalAndSlot();

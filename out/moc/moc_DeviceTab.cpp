@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'DeviceTab.h'
 **
-** Created: Fri Oct 21 21:14:23 2016
+** Created: Sat Oct 22 11:48:18 2016
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!

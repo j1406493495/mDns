@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'qMDNS.h'
 **
-** Created: Fri Oct 21 21:14:24 2016
+** Created: Sat Oct 22 11:48:21 2016
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ static const char qt_meta_stringdata_qMDNS[] = {
     "setTTL(quint32)\0lookup()\0int\0"
     "selectNetCard()\0onReadyRead()\0data\0"
     "sendPacket(QByteArray&)\0,,\0"
-    "saveDeviceInfo(QByteArray,QHostAddress,int)\0"
+    "saveDeviceInfo(uint8_t[],QHostAddress,int)\0"
 };
 
 void qMDNS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -65,7 +65,7 @@ void qMDNS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         case 4: _t->onReadyRead(); break;
         case 5: _t->sendPacket((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
-        case 6: _t->saveDeviceInfo((*reinterpret_cast< QByteArray(*)>(_a[1])),(*reinterpret_cast< QHostAddress(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
+        case 6: _t->saveDeviceInfo((*reinterpret_cast< uint8_t(*)[]>(_a[1])),(*reinterpret_cast< QHostAddress(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
         default: ;
         }
     }

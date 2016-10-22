@@ -64,7 +64,7 @@ class qMDNS : public QObject {
     void logFile(QString);
     void setNetCardInfo();
     QList<QNetworkInterface> getInterfaceList();
-    void parseRecv(QByteArray);
+    void parseRecv(uint8_t[], int);
 
   protected:
     explicit qMDNS();
@@ -78,7 +78,8 @@ class qMDNS : public QObject {
   private slots:
     void onReadyRead();
     void sendPacket (QByteArray& data);
-    void saveDeviceInfo(QByteArray, QHostAddress, int);
+    void saveDeviceInfo(uint8_t[], QHostAddress, int);
+    //void saveDeviceInfo(QByteArray, QHostAddress, int);
 
   private:
     uint8_t *sendBuf;

@@ -4,6 +4,7 @@ DeviceItem :: DeviceItem(QWidget *parent)
     : QWidget(parent)
 	,mIsMasterLabel(NULL)
 	,mDeviceNameLabel(NULL)
+    ,mVersionLabel(NULL)
 	,mMacLabel(NULL)
 	,mIPAddrLabel(NULL)
 	,mLinkLabel(NULL)
@@ -26,6 +27,14 @@ void DeviceItem :: initLayout()
 	mIsMasterLabel = new GLabel(this);
 	mIsMasterLabel->setGeometry(180, 0, 100, DEVICEITEM_HEIGHT / 2);
 	mIsMasterLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+    GLabel *versionLabel = new GLabel("Version : ", this);
+    versionLabel->setGeometry(280, 0, 80, DEVICEITEM_HEIGHT / 2);
+    versionLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+    mVersionLabel = new GLabel(this);
+    mVersionLabel->setGeometry(360, 0 ,80, DEVICEITEM_HEIGHT / 2);
+    mVersionLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	
 	GLabel *macLabel = new GLabel("MAC:", this);
 	macLabel->setGeometry(80, 30, 50, DEVICEITEM_HEIGHT / 2);
@@ -35,12 +44,12 @@ void DeviceItem :: initLayout()
 	mMacLabel->setGeometry(130, 30, 150, DEVICEITEM_HEIGHT / 2);
 	mMacLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
-	GLabel *ipLabel = new GLabel("IPv4: ", this);
+    GLabel *ipLabel = new GLabel("IPv4 : ", this);
 	ipLabel->setGeometry(280, 30, 50, DEVICEITEM_HEIGHT / 2);
 	ipLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
 	mIPAddrLabel = new GLabel(this);
-	mIPAddrLabel->setGeometry(330, 30, 100, DEVICEITEM_HEIGHT / 2);
+	mIPAddrLabel->setGeometry(330, 30, 120, DEVICEITEM_HEIGHT / 2);
 	mIPAddrLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
 	mLinkLabel = new GLabel(this);
@@ -64,6 +73,7 @@ void DeviceItem :: setDeviceInfo(DEVICE_INFO devInfo)
 {
 	mDeviceNameLabel->setText(devInfo.deviceName);
     mIsMasterLabel->setText(devInfo.isMaster ? "- Master" : "- Slave");
+    mVersionLabel->setText(devInfo.version);
 	mMacLabel->setText(devInfo.macAddr);
 	mIPAddrLabel->setText(devInfo.IPv4Addr.toString());
     QString url = "<a href=\"https://" + devInfo.IPv4Addr.toString() + "\">Manage Device";
