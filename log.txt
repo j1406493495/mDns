@@ -776,3 +776,515 @@ role = master
 product = gwn7610
 mac = 00:0b:82:8b:52:48
 version = 1.0.1.23
+start scan
+host = _gwn_controller._udp
+role = ðÄ8ü
+product = ðÄ8ü
+mac = ðÄ8ü
+version = ðÄ8ü
+role = 
+product = 
+mac = 
+version = 
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = ðÄ8ü
+product = ðÄ8ü
+mac = ðÄ8ü
+version = ðÄ8ü
+role = 
+product = 
+mac = 
+version = 
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = ðÄ8ü
+product = ðÄ8ü
+mac = ðÄ8ü
+version = ðÄ8ü
+role = 
+product = 
+mac = 
+version = 
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = ðÄ8ü
+product = ðÄ8ü
+mac = ðÄ8ü
+version = ðÄ8ü
+role = 
+product = 
+mac = 
+version = 
+start scan
+host = _gwn_controller._udp
+role = °6±ý
+product = °6±ý
+mac = °6±ý
+version = °6±ý
+role = À6±ý
+product = À6±ý
+mac = À6±ý
+version = À6±ý
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = °6±ý
+product = °6±ý
+mac = °6±ý
+version = °6±ý
+role = À6±ý
+product = À6±ý
+mac = À6±ý
+version = À6±ý
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = °6±ý
+product = °6±ý
+mac = °6±ý
+version = °6±ý
+role = À6±ý
+product = À6±ý
+mac = À6±ý
+version = À6±ý
+start scan
+host = _gwn_controller._udp
+role = `ÌDþ
+product = `ÌDþ
+mac = `ÌDþ
+version = `ÌDþ
+role = pÌDþ
+product = pÌDþ
+mac = pÌDþ
+version = pÌDþ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = `ÌDþ
+product = `ÌDþ
+mac = `ÌDþ
+version = `ÌDþ
+role = pÌDþ
+product = pÌDþ
+mac = pÌDþ
+version = pÌDþ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  þ
+product =  þ
+mac =  þ
+version =  þ
+role = °þ
+product = °þ
+mac = °þ
+version = °þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = 
+product = 
+mac = 
+version = 
+role = ¥(pþ
+product = ¥(pþ
+mac = ¥(pþ
+version = ¥(pþ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = `­ÿ
+product = `­ÿ
+mac = `­ÿ
+version = `­ÿ
+role = p­ÿ
+product = p­ÿ
+mac = p­ÿ
+version = p­ÿ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = Ð
+product = Ð
+mac = Ð
+version = Ð
+role = à
+product = à
+mac = à
+version = à
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role =  p=þ
+product =  p=þ
+mac =  p=þ
+version =  p=þ
+role = °p=þ
+product = °p=þ
+mac = °p=þ
+version = °p=þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = ÐÃ¿þ
+product = ÐÃ¿þ
+mac = ÐÃ¿þ
+version = ÐÃ¿þ
+role = àÃ¿þ
+product = àÃ¿þ
+mac = àÃ¿þ
+version = àÃ¿þ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+start scan
+start scan
+host = _gwn_controller._udp
+role = `+Mþ
+product = `+Mþ
+mac = `+Mþ
+version = `+Mþ
+role = p+Mþ
+product = p+Mþ
+mac = p+Mþ
+version = p+Mþ
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2
+start scan
+host = _gwn_controller._udp
+role = master
+product = gwn7610
+mac = 00:0b:82:8b:52:48
+version = 1.0.1.23
+role = 1.23À2
+product = 1.23À2
+mac = 1.23À2
+version = 1.23À2

@@ -110,7 +110,7 @@ void MainWidget :: onAction(QAction *action) {
 if (action->text() == "about") {
     QMessageBox::about(this, "About GWN Discovery Tool",
         "<h2>GWN Discovery Tool</h2>"
-        "<p>Version: 1.0.0.5</p>"
+        "<p>Version: 1.0.1.4</p>"
         "<p>Contact Us: www.grandstream.com</p>"
         "<p>CopyRight &copy; 2016 grandstream Inc.</p>");
     }

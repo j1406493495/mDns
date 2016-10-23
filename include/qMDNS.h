@@ -64,7 +64,7 @@ class qMDNS : public QObject {
     void logFile(QString);
     void setNetCardInfo();
     QList<QNetworkInterface> getInterfaceList();
-    void parseRecv(uint8_t[], int);
+    void parseRecv(uint8_t[], int, QHostAddress);
 
   protected:
     explicit qMDNS();

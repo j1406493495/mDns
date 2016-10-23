@@ -528,22 +528,24 @@ void qMDNS::lookup () {
 
     memset(recvBuf, 0, sizeof(recvBuf));
     socklen_t server_len = sizeof(struct sockaddr);
-    //recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, (struct sockaddr*)&m_serverAddr, &server_len);
-    int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, NULL, 0);
+    int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, (struct sockaddr*)&m_serverAddr, &server_len);
+    //int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, NULL, 0);
     if (number < 0)
     {
         qWarning() << "recvfrom error";
     }
+    
+    char *srcIp = (char *)inet_ntoa(m_serverAddr.sin_addr);
+    QHostAddress hostAddress = QHostAddress(QString(srcIp));
+    qWarning() << "hostAddress = " << hostAddress;
     qWarning() << "recvBuf = " << recvBuf;
     qWarning() << "recvBuf number = " << number;
-    parseRecv(recvBuf, number);
+    parseRecv(recvBuf, number, hostAddress);
 }
 
 
-void qMDNS::parseRecv(uint8_t data[], int number)
+void qMDNS::parseRecv(uint8_t data[], int number, QHostAddress hostAddress)
 {
-    QHostAddress hostAddress("172.16.2.133");
-
     qWarning() << "data = " << data;
 
     /* Packet is a valid mDNS datagram */
