@@ -8,10 +8,12 @@ static const QString CLOSE_BTN_HOVER_PIC = PIC_PATH + "exit_hover.png";
 MainWidget :: MainWidget(QWidget *parent)
 	: QMainWindow(parent)
 	,mDeviceTab(NULL)
+    ,mCountLabel(NULL)
 	,mScanBtn(NULL)
     ,mHelpMenu(NULL)
     ,mAboutAction(NULL)
     ,mTimer(NULL)
+    ,mLoading(NULL)
 	,mScanState(STOP)
     ,mLastClickTime(0)
 {
@@ -39,6 +41,13 @@ void MainWidget :: init()
 	headLabel->setGeometry(10, 60, 200, 30);
 	headLabel->setAlignment(Qt::AlignVCenter);
 
+    GLabel *countLabel = new GLabel("Total count : ", this);
+    countLabel->setGeometry(500, 60, 150, 30);
+
+    mCountLabel = new GLabel(this);
+    mCountLabel->setGeometry(650, 60, 60, 30);
+    mCountLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
 	mDeviceTab = new DeviceTab(this);
 	mDeviceTab->setGeometry(20, 90, DEVICETAB_WIDTH, DEVICETAB_HEIGHT);
 
@@ -55,6 +64,9 @@ void MainWidget :: init()
     mClearBtn->setText("Clear");
 
     mTimer = new QTimer(this);
+
+    mLoading = new Loading(this);
+    mLoading->move(MAINWINDOW_WIDTH - 500, MAINWINDOW_HEIGHT - 100);
 }
 
 
@@ -66,6 +78,7 @@ void MainWidget :: initSignalAndSlot()
 	connect(this, SIGNAL(startScan()), m_mDNS, SLOT(lookup()));
     connect(menuBar(), SIGNAL(triggered(QAction *)), this, SLOT(onAction(QAction *)));
     connect(mTimer, SIGNAL(timeout()), this, SLOT(timeUp()));
+    connect(mDeviceTab, SIGNAL(refreshTotalCount(int)), this, SLOT(updateTotalCount(int)));
 }
 
 void MainWidget :: startSearch()
@@ -75,19 +88,28 @@ void MainWidget :: startSearch()
     }
 	switch(mScanState) {
 		case STOP:
-            Loading::instance()->start();
+		    if (m_mDNS->getSocketId() < 0)
+            {
+                QMessageBox::warning(this, tr("Scan"),
+                        tr("Please select network interface!"),
+                        QMessageBox::Ok,
+                        QMessageBox::Ok);
+                return;
+            }
+
+            mLoading->start();
 			mScanBtn->setText("Stop");
 			mScanState = SCANNING;
             mTimer->start(1000);
 			break;
 		case SCANNING:
-            Loading::instance()->stop();
+            mLoading->stop();
 			mScanBtn->setText("Scan");
 			mScanState = STOP;
             mTimer->stop();
 			break;
 		default:
-            Loading::instance()->stop();
+            mLoading->stop();
 			mScanBtn->setText("Scan");
 			mScanState = STOP;
             mTimer->stop();
@@ -152,4 +174,13 @@ void MainWidget :: closeEvent(QCloseEvent *event)
         process.waitForFinished();
     }
 #endif
+}
+
+void MainWidget :: updateTotalCount(int count)
+{
+    if(count == 0) {
+        mCountLabel->setText("");
+    } else {
+        mCountLabel->setText(QString::number(count));
+    }
 }

@@ -8,15 +8,23 @@
 
 #include "Common.h"
 #include "netCardSelectDialog.h"
-#include "Loading.h"
-
-#include <arpa/inet.h>
 #include <iostream>
-#include <unistd.h>
 #include <stdio.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #include <string.h>
+
+#ifdef Q_OS_LINUX
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <netinet/in.h>
+#endif
+
+#ifdef Q_OS_WIN32
+    #include <Winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+    #pragma comment(lib,"ws2_32.lib")
+#endif
 
 #define MAX_BUF 1024
 #define NET_CARD_MAX_CNT 12
@@ -25,13 +33,6 @@
 class QHostInfo;
 class QUdpSocket;
 class QHostAddress;
-
-//typedef struct __NetworkInfo
-//{
-//    QString readable_name;
-//    bool isPhysical;
-//    QStringList ipList;
-//}NetworkInfo;
 
 /**
  * \brief Implements a simple mDNS responder using Qt
@@ -65,6 +66,7 @@ class qMDNS : public QObject {
     void setNetCardInfo();
     QList<QNetworkInterface> getInterfaceList();
     void parseRecv(uint8_t[], int, QHostAddress);
+    int getSocketId();
 
   protected:
     explicit qMDNS();
@@ -88,6 +90,7 @@ class qMDNS : public QObject {
     sockaddr_in m_serverAddr;
     int mMdnsSocket;
     quint32 m_ttl;
+    QStringList m_useIpList;
     QList<QUdpSocket*> m_IPv4SocketList;
     QList<QNetworkInterface> m_interfaceList;
     QList<NetworkInfo> m_networkInfoList;
@@ -96,16 +99,4 @@ class qMDNS : public QObject {
     QUdpSocket *m_IPv4Socket;
     QProcess *m_disInterfaceProcess;
 //    QUdpSocket* m_IPv6Socket;
-
-
-
-    static uint8_t _queryHeader[];
-    uint8_t* _expected;
-    int _expectedLen;
-    // Current parsing state
-    int _index;
-    // Response data
-    uint8_t* _response;
-    int _responseLen;
-
 };

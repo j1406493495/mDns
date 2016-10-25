@@ -18,6 +18,7 @@ class MainWidget : public QMainWindow
 	private:
 	    qMDNS *m_mDNS;
 		DeviceTab *mDeviceTab;
+        GLabel *mCountLabel;
 		QPushButton *mScanBtn;
 		QPushButton *mClearBtn;
 		QPushButton *mSelectNetCardBtn;
@@ -26,6 +27,8 @@ class MainWidget : public QMainWindow
         QAction *mAboutAction;
 
         QTimer *mTimer;
+
+        Loading *mLoading;
 
 		int mScanState;
         qint64 mLastClickTime;
@@ -41,6 +44,7 @@ class MainWidget : public QMainWindow
 
 	public slots:
 		void startSearch();
+        void updateTotalCount(int);
         void onAction(QAction *);
 
     private slots:

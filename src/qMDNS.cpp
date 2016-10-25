@@ -13,10 +13,6 @@
 #include <QHostAddress>
 #include <QNetworkInterface>
 
-#ifdef Q_OS_LINUX
-    #include <sys/socket.h>
-#endif
-
 #define READ_BUFFER_SIZE 20
 #define HEADER_SIZE 12
 #define QDCOUNT_OFFSET 4
@@ -125,16 +121,17 @@ bool BIND (QUdpSocket* socket, const QHostAddress& address, const int port) {
                 &reuse, sizeof (reuse));
 #endif
 
-//    qWarning() << "address == " << address;
-    //return socket->bind (address, port,
-    //                     QUdpSocket::ShareAddress |
-    //                     QUdpSocket::ReuseAddressHint);
-    return socket->bind (port, QUdpSocket::ShareAddress);
+    return socket->bind (address, port,
+                         QUdpSocket::ShareAddress |
+                         QUdpSocket::ReuseAddressHint);
 }
 
 qMDNS::qMDNS() {
     m_netCardSelectDialog = new NetCardSelectDialog();
     setNetCardInfo();
+
+    mMdnsSocket = -1;
+
 //    m_disInterfaceProcess = new QProcess(this);
 
     /* create recv socket */
@@ -238,13 +235,15 @@ void qMDNS::setNetCardInfo()
     realCardIpList.clear();
     virtualCardIpList.clear();
     ipList.clear();
+    m_useIpList.clear();
+
     QString interfaceName = QString();
     QString readableInterfaceName = QString();
     QList<QNetworkInterface> interfacesList = QNetworkInterface::allInterfaces();
     int interfaceCount = interfacesList.size();
     if (interfaceCount == 0) 
     {
-        //return networkInfoList;
+        return;
     }
 
     for(int i=0;i<interfaceCount;i++)
@@ -279,9 +278,17 @@ void qMDNS::setNetCardInfo()
             info.ipList = realCardIpList;
             if(!isLoopBack)
             {
-                networkInfoList.prepend(info);
-                m_networkInfoList.prepend(info);
-                m_interfaceList.prepend(singleInterface);
+                if (!m_useIpList.contains(realCardIpList.last()))
+                {
+                    m_useIpList.prepend(realCardIpList.last());
+                    networkInfoList.prepend(info);
+                    m_networkInfoList.prepend(info);
+                    m_interfaceList.prepend(singleInterface);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         else
@@ -304,9 +311,17 @@ void qMDNS::setNetCardInfo()
             info.ipList = virtualCardIpList;
             if(!isLoopBack)
             {
-                networkInfoList.append(info);
-                m_networkInfoList.append(info);
-                m_interfaceList.append(singleInterface);
+                if (!m_useIpList.contains(virtualCardIpList.last()))
+                {
+                    m_useIpList.append(virtualCardIpList.last());
+                    networkInfoList.append(info);
+                    m_networkInfoList.append(info);
+                    m_interfaceList.append(singleInterface);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }
@@ -480,7 +495,7 @@ void qMDNS::lookup () {
     sendBuf[curPos] = (uint8_t)hostLen;
     curPos += 1;
 //    data.append (host.toUtf8());                                     
-    for (int i = 0; i < hostLen; i++) {
+    for (int i = 0; i < (int)hostLen; i++) {
         sendBuf[curPos+i] = tolower(host[i]);
     }
     curPos += hostLen;
@@ -491,7 +506,7 @@ void qMDNS::lookup () {
     sendBuf[curPos] = (uint8_t)udpLen;
     curPos += 1;
 //    data.append (udp.toUtf8());                                      
-    for (int i = 0; i < udpLen; i++) {
+    for (int i = 0; i < (int)udpLen; i++) {
         sendBuf[curPos+i] = tolower(udp[i]);
     }                                                                
     curPos += udpLen;
@@ -502,7 +517,7 @@ void qMDNS::lookup () {
     sendBuf[curPos] = (uint8_t)domainLen;
     curPos += 1;
 //    data.append (domain.toUtf8());                                   
-    for (int i = 0; i < domainLen; i++) {
+    for (int i = 0; i < (int)domainLen; i++) {
         sendBuf[curPos+i] = tolower(domain[i]);
     }                                                               
     curPos += domainLen;
@@ -523,19 +538,29 @@ void qMDNS::lookup () {
     memcpy(sendBuf+curPos, ipv4Record, 4);
     curPos += 4;
                                                                      
+    sockaddr_in sendRecvAddr;
+    memset(&sendRecvAddr, 0, sizeof(sendRecvAddr));
+    sendRecvAddr.sin_family = AF_INET;
+    sendRecvAddr.sin_port = htons(MDNS_PORT);
+    sendRecvAddr.sin_addr.s_addr = inet_addr(MDNS_ADDRESS);
+
     qWarning() << "sendbuf = " << sendBuf;                           
-    sendto(mMdnsSocket, sendBuf, curPos, 0, (struct sockaddr*)&m_serverAddr, sizeof(struct sockaddr));
+    sendto(mMdnsSocket, (const char*)sendBuf, curPos, 0, (struct sockaddr*)&sendRecvAddr, sizeof(struct sockaddr));
 
     memset(recvBuf, 0, sizeof(recvBuf));
+#ifdef Q_OS_LINUX
     socklen_t server_len = sizeof(struct sockaddr);
-    int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, (struct sockaddr*)&m_serverAddr, &server_len);
-    //int number = recvfrom(mMdnsSocket, recvBuf, sizeof(recvBuf), 0, NULL, 0);
+#endif
+#ifdef Q_OS_WIN32
+    int server_len = sizeof(struct sockaddr);
+#endif
+    int number = recvfrom(mMdnsSocket, (char*)recvBuf, sizeof(recvBuf), 0, (struct sockaddr*)&sendRecvAddr, &server_len);
     if (number < 0)
     {
         qWarning() << "recvfrom error";
     }
     
-    char *srcIp = (char *)inet_ntoa(m_serverAddr.sin_addr);
+    char *srcIp = (char *)inet_ntoa(sendRecvAddr.sin_addr);
     QHostAddress hostAddress = QHostAddress(QString(srcIp));
     qWarning() << "hostAddress = " << hostAddress;
     qWarning() << "recvBuf = " << recvBuf;
@@ -546,10 +571,7 @@ void qMDNS::lookup () {
 
 void qMDNS::parseRecv(uint8_t data[], int number, QHostAddress hostAddress)
 {
-    qWarning() << "data = " << data;
-
     /* Packet is a valid mDNS datagram */
-//    if (data.length() > MIN_LENGTH) {
     if (number > MIN_LENGTH) {
         /* Get the lengths of the host name and domain */
         int n = 12;
@@ -564,10 +586,6 @@ void qMDNS::parseRecv(uint8_t data[], int number, QHostAddress hostAddress)
             name[i] = tolower(data[h+i]);
         } 
         qWarning() << "name = " << name;
-//        while (h <= data.length() && data.at (h) != (char) domainLength) {
-//            name.append (data.at (h));
-//            ++h;
-//        }
 
         /* Read domain length until we stumble with the FQDN/TLD separator */
         char domain[domainLength];
@@ -577,10 +595,6 @@ void qMDNS::parseRecv(uint8_t data[], int number, QHostAddress hostAddress)
             domain[i] = tolower(data[d+i]);
         }
         qWarning() << "domain = " << domain;
-//        while (d <= data.length() && data.at (d) != kFQDN_Separator) {
-//            domain.append (data.at (d));
-//            ++d;
-//        }
 
         /* Construct the full host name (name + domain) */
         QString host = getAddress ((QString)name + "." + (QString)domain);
@@ -593,7 +607,6 @@ void qMDNS::parseRecv(uint8_t data[], int number, QHostAddress hostAddress)
             /*parse mdns gwn info when restart network*/
             saveDeviceInfo(data, hostAddress, 148);
         }
-    //}
     }
 }
 
@@ -664,7 +677,7 @@ void qMDNS::saveDeviceInfo(uint8_t data[], QHostAddress hostAddress, int t)
     int productLength = data[t + roleLength + 1];
     int macLength = data[t + roleLength + productLength + 2];
     int versionLength = data[t + roleLength + productLength + macLength + 3];
-    char endChar = (char)data[t + roleLength + productLength + macLength + versionLength + 4];
+//    char endChar = (char)data[t + roleLength + productLength + macLength + versionLength + 4];
     
     char role[roleLength];
     char product[productLength];
@@ -756,17 +769,6 @@ void qMDNS::sendPacket (QByteArray& data) {
         //int count = m_IPv4SocketList.size();
 //        qWarning() << "sendPacket";
 //        logFile(QString("sendPacket"));
-//        memset(sendBuf, 0, sizeof(sendBuf));
-//        strcpy(sendBuf, data.data());
-        //strcpy(sendBuf, "sendpacket");
-//        qWarning() << "sendbuf = " << sendBuf;
-
-//        memset(&m_serverAddr, 0, sizeof(m_serverAddr));
-//        m_serverAddr.sin_family = AF_INET;
-//        m_serverAddr.sin_port = htons(MDNS_PORT);
-//        m_serverAddr.sin_addr.s_addr = inet_addr(MDNS_ADDRESS);
-
-//        sendto(mMdnsSocket, sendBuf, strlen(sendBuf), 0, (struct sockaddr*)&m_serverAddr, sizeof(struct sockaddr));
 //        m_IPv4Socket->writeDatagram (data, IPV4_ADDRESS, MDNS_PORT);
         //for (int i=0; i<count; i++)
         //{
@@ -799,12 +801,36 @@ int qMDNS::selectNetCard()
     int index = getNetworkInfoList();
     if (index >= 0) 
     {
+#ifdef Q_OS_WIN32
+        WORD wVersionRequested;
+        WSADATA wsaData;
+        int err;
+
+        wVersionRequested = MAKEWORD(2, 2);
+
+        err = WSAStartup(wVersionRequested, &wsaData);
+        if (err != 0) {
+            /* Tell the user that we could not find a usable */
+            /* Winsock DLL.                                  */
+            qWarning() << "WSAStartup failed with error: " << err;
+            return -1;
+        }
+
+        if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+            /* Tell the user that we could not find a usable */
+            /* WinSock DLL.                                  */
+            qWarning() << "Could not find a usable version of Winsock.dll";
+            WSACleanup();
+            return -1;
+        }
+#endif
+
         // Create the UDP socket
         mMdnsSocket = -1;
-        int ret = 0;
 
         mMdnsSocket = socket(AF_INET, SOCK_DGRAM, 0);
         if (mMdnsSocket < 0) {
+            mMdnsSocket = -1;
             return -1;
         }
         qWarning() << "init mMdnsSocket ok ++++++++++++++++++++++++";
@@ -813,25 +839,28 @@ int qMDNS::selectNetCard()
         if(setsockopt(mMdnsSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) < 0)
         {
             qWarning() << "Setting SO_REUSEADDR error";
+#ifdef Q_OS_LINUX
             close(mMdnsSocket);
+#endif
+#ifdef Q_OS_WIN32
+            closesocket(mMdnsSocket);
+#endif
+            mMdnsSocket = -1;
             return -1;
         }
         qWarning() << "reus ok +++++++++++++++++++++++++++++";
-
-        // set a socket option
-//        bool bBroadcast = true;
-//        if (setsockopt(mMdnsSocket, SOL_SOCKET, SO_BROADCAST, (char*)&bBroadcast, sizeof(bool)) < 0)
-//        {
-//            qWarning() << "setsockopt broadcast error!";
-//            close(mMdnsSocket);
-//            return -1;
-//        }
 
         int loopBack=1;
         if(setsockopt(mMdnsSocket, IPPROTO_IP, IP_MULTICAST_LOOP, (char*)&loopBack, sizeof(loopBack)) < 0)
         {
             qWarning() << "setsockopt ip_multicast_loop error!!!";
+#ifdef Q_OS_LINUX
             close(mMdnsSocket);
+#endif
+#ifdef Q_OS_WIN32
+            closesocket(mMdnsSocket);
+#endif
+            mMdnsSocket = -1;
             return -1;
         }
         qWarning() << "loopback ok ++++++++++++++++++++++++";
@@ -839,16 +868,14 @@ int qMDNS::selectNetCard()
         memset(&m_serverAddr, 0, sizeof(m_serverAddr));
         m_serverAddr.sin_family = AF_INET;
         m_serverAddr.sin_port = htons(MDNS_PORT);
-        //m_serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-        m_serverAddr.sin_addr.s_addr = inet_addr(MDNS_ADDRESS);
+        m_serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        //if (bind(mMdnsSocket, (sockaddr*) &address, sizeof(address)) < 0) {
         if (bind(mMdnsSocket, (struct sockaddr*) &m_serverAddr, sizeof(struct sockaddr)) < 0) {
             qWarning() << "bind failed";
+            mMdnsSocket = -1;
             return -1;
         }
         qWarning() << "bind ok ++++++++++++++++++++++++";
-
 
         struct in_addr addr = {0};
         addr.s_addr=inet_addr(m_networkInfoList[index].ipList.last().toStdString().c_str());
@@ -856,46 +883,54 @@ int qMDNS::selectNetCard()
         struct ip_mreq ipmr;
         ipmr.imr_interface.s_addr = addr.s_addr;
         ipmr.imr_multiaddr.s_addr = inet_addr(MDNS_ADDRESS);
-        ret=setsockopt(mMdnsSocket,IPPROTO_IP,IP_ADD_MEMBERSHIP,(const char*)&ipmr,sizeof(ipmr));
+        if (setsockopt(mMdnsSocket,IPPROTO_IP,IP_ADD_MEMBERSHIP,(const char*)&ipmr,sizeof(ipmr)) < 0)
+        {
+            qWarning() << "setsockopt recvtimeout error!!!";
+#ifdef Q_OS_LINUX
+            close(mMdnsSocket);
+#endif
+#ifdef Q_OS_WIN32
+            closesocket(mMdnsSocket);
+#endif
+            mMdnsSocket = -1;
+            return -1;
+        }
         qWarning() << "add membership ok ++++++++++++++++++++++";
 
-        if(-1 == setsockopt(mMdnsSocket, IPPROTO_IP, IP_MULTICAST_IF, (char *)&addr, sizeof(addr)))
+        if(setsockopt(mMdnsSocket, IPPROTO_IP, IP_MULTICAST_IF, (char *)&addr, sizeof(addr)) < 0)
         {
             qWarning() << "set error IP_MULTICAST_IF";
+#ifdef Q_OS_LINUX
             close(mMdnsSocket);
+#endif
+#ifdef Q_OS_WIN32
+            closesocket(mMdnsSocket);
+#endif
             mMdnsSocket = -1;
+            return -1;
         }
         qWarning() << "multicast_if ok ++++++++++++++++++++++";
 
-#if 0
         struct timeval tv;
         tv.tv_sec = 2;
         tv.tv_usec = 0;
-        ret = setsockopt(mMdnsSocket,SOL_SOCKET,SO_RCVTIMEO,(char*)&tv,sizeof(tv));
-        if(-1 == ret)
+        if (setsockopt(mMdnsSocket,SOL_SOCKET,SO_RCVTIMEO,(char*)&tv,sizeof(tv)) < 0) 
         {
             qWarning() << "setsockopt recvtimeout error!!!";
+#ifdef Q_OS_LINUX
             close(mMdnsSocket);
+#endif
+#ifdef Q_OS_WIN32
+            closesocket(mMdnsSocket);
+#endif
+            mMdnsSocket = -1;
             return -1;
         }
         qWarning() << "selectNetCard ok ++++++++++++++++++++=";
-#endif
 
-
-
-        //memset(sendBuf, 0, sizeof(sendBuf));
-        //strcpy(sendBuf, "test string");
-        //qWarning() << "sendbuf = " << sendBuf;
-
-        //sendto(mMdnsSocket, sendBuf, strlen(sendBuf), 0, (struct sockaddr*)&m_serverAddr, sizeof(struct sockaddr));
-
-
-
-//        mMdnsSocket = socket;
 
 #if 0
         int count = m_interfaceList.size();
-        Loading::instance()->start();
         for (int i=0; i<count; i++)
         {
             QString interfaceName = m_interfaceList[i].humanReadableName();
@@ -916,7 +951,6 @@ int qMDNS::selectNetCard()
             m_disInterfaceProcess->waitForStarted();
             m_disInterfaceProcess->waitForFinished();
         }
-        Loading::instance()->stop();
 
         m_IPv4Socket->leaveMulticastGroup(IPV4_ADDRESS);
         delete m_IPv4Socket;
@@ -954,4 +988,9 @@ int qMDNS::selectNetCard()
 QList<QNetworkInterface> qMDNS::getInterfaceList()
 {
     return m_interfaceList;
+}
+
+int qMDNS::getSocketId()
+{
+    return mMdnsSocket;
 }

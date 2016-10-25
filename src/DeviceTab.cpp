@@ -20,21 +20,19 @@ void DeviceTab :: initLayout()
     m_mDNS = qMDNS::getInstance();
 
     mDeviceListWidget = new QListWidget();
-	mDeviceListWidget->resize(DEVICETAB_WIDTH, DEVICETAB_HEIGHT);
+	mDeviceListWidget->resize(DEVICETAB_WIDTH-2, DEVICETAB_HEIGHT-2);
 	
 	mDeviceListArea = new QScrollArea(this);
 	mDeviceListArea->setGeometry(0, 0, DEVICETAB_WIDTH, DEVICETAB_HEIGHT);
 	mDeviceListArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	mDeviceListArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mDeviceListArea->setWidget(mDeviceListWidget);
-	mDeviceListArea->adjustSize();
 }
 
 void DeviceTab :: initSignalAndSlot()
 {
     connect(m_mDNS, SIGNAL(refreshSignal(DEVICE_INFO)), this, SLOT(refresh(DEVICE_INFO)));
 }
-
 
 void DeviceTab :: refresh(DEVICE_INFO deviceInfo)
 {
@@ -56,13 +54,13 @@ void DeviceTab :: refresh(DEVICE_INFO deviceInfo)
         DeviceItem *devItem = (DeviceItem *)mDeviceListWidget->itemWidget(item);
         devItem->setDeviceInfo(deviceInfo);
     }
-	mDeviceListArea->adjustSize();
+    emit refreshTotalCount(mDeviceListWidget->count());
 }
 
 void DeviceTab :: clearList()
 {
     mDeviceListWidget->clear();
-	mDeviceListArea->adjustSize();
+    emit refreshTotalCount(0);
 }
 
 void DeviceTab :: setScanState(int state)

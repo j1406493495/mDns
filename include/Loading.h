@@ -7,14 +7,12 @@ class Loading : public QLabel
 {
 	Q_OBJECT
 	public:
-        Loading();
+        Loading(QWidget *parent);
 		~Loading();
 		void start();
 		void stop();
-        static Loading* instance();
 
 	private:
-        static Loading *mInstance;
 		QMovie *mLoadingMovie;
 };
 

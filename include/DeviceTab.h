@@ -25,6 +25,9 @@ class DeviceTab : public QWidget
 	public slots:
 	    void clearList();
 		void refresh(DEVICE_INFO);
+
+    signals:
+        void refreshTotalCount(int);
 };
 
 #endif
